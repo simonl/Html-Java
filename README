@@ -35,8 +35,8 @@ final HTML widgets = <%
     {%
       map(getAllWidgets(), #HTML(Widget w) => <%
         <DIV class={% w.getModel() %}>
-          {% w /* calls toString */ %}
-        </DIB>
+          {% w %}
+        </DIV>
       %>)
     %}
   </DIV>
