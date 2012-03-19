@@ -2,13 +2,13 @@
 import java.io.PrintStream;
 import java.util.*;
 import java.util.Map.Entry;
-import com.dataClasses.Either;
 
 public final class HTML {
 
 	public final String tag;
 	public final Map<String, Object> attributes;
 	public final List<Either<Object, HTML>> children;
+
 
 	public HTML(final String tag, final Map<String, Object> attributes, final List<Either<Object, HTML>> children) {
 		this.tag = tag;
@@ -17,13 +17,13 @@ public final class HTML {
 	}
 
 	public HTML add(final Object child) {
-		this.children.add(Either.<Object, HTML>bad(child));
+		this.children.add(Either.<Object, HTML>left(child));
 
 		return this;
 	}
 
 	public HTML add(final HTML child) {
-		this.children.add(Either.<Object, HTML>good(child));
+		this.children.add(Either.<Object, HTML>right(child));
 
 		return this;
 	}
@@ -76,10 +76,10 @@ public final class HTML {
 		} else {
 			result += ">";
 			for(final Either<Object, HTML> sub : children) {
-				if(sub.isBad()) {
-					result += sub.badValue().toString();
+				if(sub.tag == Either.Tag.LEFT) {
+					result += sub.left().toString();
 				} else {
-					result += sub.goodValue().toString();
+					result += sub.right().toString();
 				}
 			}
 			result += "</" + tag + ">";
@@ -101,10 +101,10 @@ public final class HTML {
 		} else {
 			out.print(">");
 			for(final Either<Object, HTML> sub : children) {
-				if(sub.isBad()) {
-					out.println(sub.badValue());
+				if(sub.tag == Either.Tag.LEFT) {
+					out.println(sub.left());
 				} else {
-					sub.goodValue().print(out);
+					sub.right().print(out);
 				}
 			}
 			out.print("</" + tag + ">");

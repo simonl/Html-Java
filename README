@@ -1,0 +1,46 @@
+We've been learning JSPs at school and it's atrocious, so I did something better.
+
+Basically, the (Haskell) function HTML.entirety takes a string representing java code (+ extensions) 
+and returns the parsed result. The Show instance for this AST will return plain java text (using the HTML class).
+
+Main Extension:
+  quasi-quoted HTML between <% and %>.
+  Inside the HTML quotes, you can unquote Java code between {% and %}.
+  You can alternately nest them arbitrarily deep.
+  You can splice any Java object into the HTML, or any collection of HTML elements as a list of child nodes,
+    and any Java object as an attribute value (though not keys)
+
+  public static final HTML hello(final String name) {
+    return <%
+      <H1>Hello, {% name %}</H1>
+    %>
+  }
+
+
+Bonus:
+  More concise notation for closures.
+  The body is either a block or an expression between parenthesis, or between quasi-quotes.
+  That way it's easy (for the parser) to find where it ends
+
+  #Integer(Integer n) => (n * n)
+  #Integer(Integer n) => { return n * n; }
+  #Html(String name) => <% <H1>Hello, {% name %}</H1> %>
+
+
+
+
+
+final HTML widgets = <%
+  <DIV id="widgets">
+    {%
+      map(getAllWidgets(), #HTML(Widget w) => <%
+        <DIV class={% w.getModel() %}>
+          {% w %}
+        </DIV>
+      %>)
+    %}
+  </DIV>
+%>;
+
+widgets.print(response.getWriter());
+
