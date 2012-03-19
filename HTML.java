@@ -1,4 +1,3 @@
-package extendedJava;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -19,13 +18,13 @@ public final class HTML {
 
 	public HTML add(final Object child) {
 		this.children.add(Either.<Object, HTML>bad(child));
-		
+
 		return this;
 	}
 
 	public HTML add(final HTML child) {
 		this.children.add(Either.<Object, HTML>good(child));
-		
+
 		return this;
 	}
 
@@ -33,7 +32,7 @@ public final class HTML {
 		for(final HTML child : children) {
 			add(child);
 		}
-		
+
 		return this;
 	}
 
@@ -41,7 +40,7 @@ public final class HTML {
 		for(final HTML child : children) {
 			add(child);
 		}
-		
+
 		return this;
 	}
 
