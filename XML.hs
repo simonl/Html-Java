@@ -1,4 +1,4 @@
-module HTML where
+module XML where
 
 import Control.Applicative
 import Control.Monad
@@ -221,17 +221,18 @@ compactSimpl = foldr step []
 		
 instance Show HTML where
 	show (HTML tag attr Nothing)
-		| Map.size attr == 0 = "HTML.closed(" ++ show tag ++ ")"
-		| otherwise = "HTML.closed(" ++ show tag ++ ", " ++ showAttr attr ++ ")"
+		| Map.size attr == 0 = "XML.closed(" ++ show tag ++ ")"
+		| otherwise = "XML.closed(" ++ show tag ++ ", " ++ showAttr attr ++ ")"
 	show (HTML tag attr (Just children))
-		| Map.size attr == 0 = "HTML.full(" ++ show tag ++ ")" ++ (children >>= showChild)
-		| otherwise = "HTML.full(" ++ show tag ++ ", " ++ showAttr attr ++ ")" ++ (children >>= showChild)
+		| Map.size attr == 0 = "XML.open(" ++ show tag ++ ")" ++ (children >>= showChild)
+		| otherwise = "XML.open(" ++ show tag ++ ", " ++ showAttr attr ++ ")" ++ (children >>= showChild)
 
 showAttr attr = "new HashMap<String, Object>() {{ " ++ (Map.toList attr >>= showPutAttr) ++ " }}"
 showPutAttr (key, Left prog) = "this.put(" ++ show key ++ ", " ++ show prog ++ ");"
 showPutAttr (key, Right val) = "this.put(" ++ show key ++ ", " ++ show val ++ ");"
 
-showChild (Plain s) = ".add(" ++ show s ++ ")"
+showChild (Plain s) | all isSpace s = ""
+		    | otherwise = ".add(" ++ show s ++ ")"
 showChild (Splice p) = ".add(" ++ show p ++ ")"
 showChild (Node n) = ".add(" ++ show n ++ ")"
 
@@ -258,32 +259,6 @@ instance Show JType where
 	show (JArray t) = show t ++ "[]"
 	
 
-
-
-
-
-
-header = List.intercalate "\n" lines
-	where	lines = [
-			"package extendedJava.obj;",
-			"import extendedJava.HTML;",
-			"import java.util.Map;",
-			"import java.util.HashMap;"]
-
-unquote name = do
-	text <- readFile ("src/" ++ name)
-	let res = entirety text
-	case res of
-		Nothing -> putStrLn ("Invalid program: " ++ name)
-		Just prog -> writeFile ("obj/" ++ name ++ ".java") (header ++ "\n\n" ++ show prog)
-
-build = do
-	files <- getDirectoryContents "src"
-	forM_ (quoteFilesOnly files) unquote
-
-quoteFilesOnly = List.filter (\name -> head name /= '.')
-
-main = build
 
 
 
